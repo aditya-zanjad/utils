@@ -1,0 +1,25 @@
+{
+    "name": "aditya-zanjad/utils",
+    "type": "library",
+    "require-dev": {
+        "phpunit/phpunit": "10.5.x-dev"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AdityaZanjad\\Utils\\": "src/"
+        },
+        "files": [
+            "src/Helpers/arr.php",
+            "src/Helpers/str.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "aditya.zanjad",
+            "email": "aditya.zanjad@hodusoft.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
