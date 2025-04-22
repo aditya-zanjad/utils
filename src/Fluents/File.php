@@ -29,11 +29,6 @@ class File
     protected array $metadata;
 
     /**
-     * @var null|string $error
-     */
-    protected $error;
-
-    /**
      * @param string|resource $file
      */
     public function __construct($file)
@@ -45,6 +40,8 @@ class File
      * Open the file. If something goes wrong, throw an exception.
      *
      * @param string $mode
+     * 
+     * @throws \Exception
      *
      * @return static
      */
@@ -61,15 +58,13 @@ class File
                 $file = fopen($this->file, $this->decideOpenMode($mode));
             } catch (Throwable $e) {
                 // dd($e);
-                $this->error = "Failed to open the file at the given path [{$this->file}]";
-                return $this;
+                throw new Exception("Failed to open the file at the given path [{$this->file}]");
             }
         }
 
         // If opening the file still failed due to some reason(s).
         if ($file === false) {
-            $this->error = 'The function "fopen()" returned the boolean value "false".';
-            return $this;
+            throw new Exception('The function "fopen()" returned the boolean value "false".');
         }
 
         if (is_null($file)) {
@@ -77,20 +72,17 @@ class File
         }
 
         if (!is_resource($file)) {
-            $this->error = 'The file must be either a valid file path OR a resource.';
-            return $this;
+            throw new Exception('The file must be either a valid file path OR a resource.');
         }
 
         $metadata = stream_get_meta_data($file);
 
         // Make sure that the current resource is a valid file.
         if ($metadata['wrapper_type'] !== 'plain_file') {
-            $this->error = 'The given resource type is not a valid file.';
-            return $this;
+            throw new Exception('The given resource type is not a valid file.');
         }
 
         $this->file             =   $file;
-        $this->error            =   null;
         $this->metadata         =   $metadata;
         $this->alreadyOpened    =   true;
 
