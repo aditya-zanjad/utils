@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AdityaZanjad\Utils\Helpers;
 
+use Iterator;
 use SplStack;
 use Exception;
 use RecursiveArrayIterator;
@@ -16,7 +17,7 @@ use RecursiveIteratorIterator;
  *
  * @return mixed
  */
-function arr_first(array $arr)
+function arrFirst(array $arr)
 {
     if (empty($arr)) {
         return null;
@@ -37,7 +38,7 @@ function arr_first(array $arr)
  *
  * @return int|string
  */
-function arr_first_key(array $arr)
+function arrFirstKey(array $arr)
 {
     if (!function_exists('array_key_first')) {
         reset($arr);
@@ -54,7 +55,7 @@ function arr_first_key(array $arr)
  *
  * @return mixed
  */
-function arr_last(array $arr)
+function arrLast(array $arr)
 {
     if (empty($arr)) {
         return null;
@@ -74,7 +75,7 @@ function arr_last(array $arr)
  *
  * @return int|string
  */
-function arr_last_key(array $arr): int|string
+function arrLastKey(array $arr): int|string
 {
     if (function_exists('array_key_last')) {
         return array_key_last($arr);
@@ -91,7 +92,7 @@ function arr_last_key(array $arr): int|string
  *
  * @return  null|int|string
  */
-function arr_nth(array $arr, int $index)
+function arrNth(array $arr, int $index)
 {
     if (empty($arr) || count($arr) < abs($index)) {
         return null;
@@ -109,7 +110,7 @@ function arr_nth(array $arr, int $index)
  *
  * @return  null|int|string
  */
-function arr_nth_key(array $arr, int $index): null|int|string
+function arrNthKey(array $arr, int $index): null|int|string
 {
     if (empty($arr)) {
         return null;
@@ -137,7 +138,7 @@ function arr_nth_key(array $arr, int $index): null|int|string
  *
  * @return  bool
  */
-function arr_exists(array $arr, string $path): bool
+function arrHasPath(array $arr, string $path): bool
 {
     $keys       =   explode('.', $path);
     $ref        =   &$arr;
@@ -163,7 +164,7 @@ function arr_exists(array $arr, string $path): bool
  *
  * @return  bool
  */
-function arr_null(array $arr, string $path): bool
+function arrIsPathNull(array $arr, string $path): bool
 {
     $keys   =   explode('.', $path);
     $ref    =   &$arr;
@@ -189,7 +190,7 @@ function arr_null(array $arr, string $path): bool
  *
  * @return  bool
  */
-function arr_empty(array $arr, string $path): bool
+function arrIsPathEmpty(array $arr, string $path): bool
 {
     $ref        =   &$arr;
     $pathKeys   =   explode('.', $path);
@@ -216,7 +217,7 @@ function arr_empty(array $arr, string $path): bool
  *
  * @return  mixed
  */
-function arr_get(array $arr, string $path)
+function arrGet(array $arr, string $path)
 {
     $value = null;
 
@@ -233,41 +234,6 @@ function arr_get(array $arr, string $path)
         }
 
         $ref = &$ref[$key];
-    }
-
-    return $ref;
-}
-
-/**
- * Try to get array value based on the given array path. If it does not exist, return the specified default value instead.
- *
- * @param   array<int|string, mixed>    $arr
- * @param   string                      $path
- * @param   mixed                       $default
- *
- * @return  mixed
- */
-function arr_get_alt(array $arr, string $path, $default)
-{
-    $value = null;
-
-    if (empty($arr)) {
-        return $value;
-    }
-
-    $ref    =   &$arr;
-    $keys   =   explode('.', $path);
-
-    foreach ($keys as $key) {
-        if (!array_key_exists($key, $ref) || !is_array($ref)) {
-            break;
-        }
-
-        $ref = &$ref[$key];
-    }
-
-    if (is_null($ref)) {
-        return $default;
     }
 
     return $ref;
@@ -282,7 +248,7 @@ function arr_get_alt(array $arr, string $path, $default)
  *
  * @return  array<int|string, mixed>
  */
-function arr_set(array $arr, string $path, $value)
+function arrSet(array $arr, string $path, $value)
 {
     $ref    =   &$arr;
     $keys   =   explode('.', $path);
@@ -305,14 +271,58 @@ function arr_set(array $arr, string $path, $value)
 }
 
 /**
- * Remove more than one array elements by the given array keys.
+ * Remove an element from the array based on the given path.
  *
  * @param   array<int|string, mixed>    $arr
- * @param   string                      ...$paths
+ * @param   string                      $paths
  *
  * @return  array<int|string, mixed>
  */
-function arr_remove(array $arr, string ...$paths): array
+function arrRemove(array $arr, string $path): array
+{
+    $ref        =   &$arr;
+    $keys       =   explode('.', $path);
+    $lastKey    =   array_pop($keys);
+
+    foreach ($keys as $key) {
+        if (!array_key_exists($key, $ref) || !is_array($ref[$key])) {
+            continue;
+        }
+
+        $ref = &$ref[$key];
+    }
+
+    unset($ref[$lastKey]);
+    return $arr;
+
+    foreach ($paths as $path) {
+        $ref        =   &$arr;
+        $keys       =   explode('.', $path);
+        $lastKey    =   array_pop($keys);
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $ref) || !is_array($ref[$key])) {
+                continue;
+            }
+
+            $ref = &$ref[$key];
+        }
+
+        unset($ref[$lastKey]);
+    }
+
+    return $arr;
+}
+
+/**
+ * Remove more than one elements from the array based on the given path.
+ * 
+ * @param   array<int|string, mixed>    $arr
+ * @param   string                      $paths
+ *
+ * @return  array<int|string, mixed>
+ */
+function arrRemoveMany(array $arr, string ...$paths)
 {
     foreach ($paths as $path) {
         $ref        =   &$arr;
@@ -321,7 +331,7 @@ function arr_remove(array $arr, string ...$paths): array
 
         foreach ($keys as $key) {
             if (!array_key_exists($key, $ref) || !is_array($ref[$key])) {
-                break;
+                continue 2;
             }
 
             $ref = &$ref[$key];
@@ -341,26 +351,26 @@ function arr_remove(array $arr, string ...$paths): array
  *
  * @return  array<int|string, mixed>
  */
-function arr_map_fn(array $arr, callable $fn): array
+function arrMapFn(array $arr, callable $fn): array
 {
     if (empty($arr)) {
         return [];
     }
 
-    $mapped = [];
+    $mapper = function (array $arr, callable $fn): Iterator {
+        foreach ($arr as $key => $value) {
+            $result = $fn($value, $key);
 
-    foreach ($arr as $key => $value) {
-        $result = $fn($value, $key);
+            if (!is_array($result) || empty($result) || count($result) > 1) {
+                throw new Exception("[Developer][Exception]: The callback function must return an array containing a [key => value] pair.");
+            }
 
-        if (!is_array($result)) {
-            throw new Exception("[Developer][Exception]: The callback function must return an array.");
+            $firstKey = !function_exists('array_key_first') ? key($result) : array_key_first($result);
+            yield $firstKey => $result[$firstKey];
         }
+    };
 
-        $firstKey           =   !function_exists('array_key_first') ? key($result) : array_key_first($result);
-        $mapped[$firstKey]  =   $result[$firstKey];
-    }
-
-    return $mapped;
+    return iterator_to_array($mapper($arr, $fn));
 }
 
 /**
@@ -371,24 +381,24 @@ function arr_map_fn(array $arr, callable $fn): array
  *
  * @return  mixed
  */
-function arr_first_fn(array|SplStack $arr, callable $fn)
+function arrFirstFn(array|SplStack $arr, callable $fn)
 {
-    $filteredValue = null;
+    $filter = function (array $arr, callable $fn): Iterator {
+        foreach ($arr as $key => $value) {
+            $result = call_user_func($fn, $value, $key);
 
-    foreach ($arr as $key => $value) {
-        $result = call_user_func($fn, $value, $key);
+            if (!is_bool($result)) {
+                throw new Exception("[Developer][Exception]: The given callback function must always return a boolean value.");
+            }
 
-        if (!is_bool($result)) {
-            throw new Exception("[Developer][Exception]: The given callback function must always return a boolean value.");
+            if ($result === true) {
+                yield $value;
+                break;
+            }
         }
+    };
 
-        if ($result === true) {
-            $filteredValue = $value;
-            break;
-        }
-    }
-
-    return $filteredValue;
+    return iterator_to_array($filter($arr, $fn));
 }
 
 /**
@@ -399,7 +409,7 @@ function arr_first_fn(array|SplStack $arr, callable $fn)
  *
  * @return  array<int|string, mixed>
  */
-function arr_last_fn(array $arr, callable $fn)
+function arrLastFn(array $arr, callable $fn)
 {
     $arr            =   new SplStack($arr);
     $filteredValue  =   null;
@@ -427,7 +437,7 @@ function arr_last_fn(array $arr, callable $fn)
  *
  * @return bool
  */
-function arr_indexed(array $arr): bool
+function arrIndexed(array $arr): bool
 {
     if (empty($arr)) {
         return true;
@@ -447,7 +457,7 @@ function arr_indexed(array $arr): bool
  *
  * @return bool
  */
-function arr_associative(array $arr): bool
+function arrIsAssociative(array $arr): bool
 {
     if (empty($arr)) {
         return false;
@@ -467,7 +477,7 @@ function arr_associative(array $arr): bool
  *
  * @return array<int|string, mixed>
  */
-function arr_dot(array $arr): array
+function arrDot(array $arr): array
 {
     if (empty($arr)) {
         return $arr;
@@ -500,7 +510,7 @@ function arr_dot(array $arr): array
  *
  * @return array<int|string, mixed>
  */
-function arr_undot(array $arr)
+function arrUndot(array $arr)
 {
     $result = [];
 
@@ -522,6 +532,47 @@ function arr_undot(array $arr)
         }
 
         $ref = $value;  // Assign given value to the final nested key of the array.
+    }
+
+    return $result;
+}
+
+/**
+ * Convert the nested array structure into an indexed array.
+ * 
+ * @param array $arr
+ * 
+ * @return array
+ */
+function arrFlatten(array $arr): array
+{
+    if (empty($arr)) {
+        return [];
+    }
+
+    if (!class_exists(RecursiveIteratorIterator::class) || !class_exists(RecursiveArrayIterator::class)) {
+        $flattener = function (array $arr) use (&$flattener) {
+            foreach ($arr as $value) {
+                is_array($value) ? yield from $flattener($value) : yield $value;
+            }
+        };
+
+        return iterator_to_array($flattener($arr), false);
+    }
+
+    $arrIterator    =   new RecursiveArrayIterator($arr);
+    $iterator       =   new RecursiveIteratorIterator($arrIterator, RecursiveIteratorIterator::SELF_FIRST);
+    $result         =   [];
+    $nestedPathKeys =   [];
+
+    foreach ($iterator as $key => $value) {
+        $nestedPathKeys[$iterator->getDepth()] = $key;
+
+        if (is_array($value)) {
+            continue;
+        }
+
+        $result[] = $value;
     }
 
     return $result;

@@ -32,7 +32,7 @@ class Json
      */
     public function __construct(string $json, array $options = [])
     {
-        $options    =   $this->validateOptions($options);
+        $options    =   $this->validateAndTransformOptions($options);
         $result     =   json_decode($json, true, $options['depth']);
         $code       =   json_last_error();
 
@@ -51,7 +51,7 @@ class Json
      *
      * @return array<int|string, mixed>
      */
-    protected function validateOptions(array $options)
+    protected function validateAndTransformOptions(array $options)
     {
         $options = [
             'depth' =>  $options['depth'] ?? 1024,
@@ -109,25 +109,8 @@ class Json
      */
     public function setMany(array $data): static
     {
-        foreach ($data as $path => $value) {
-            $ref        =   &$this->data;
-            $keys       =   explode('.', $path);
-            $lastKey    =   array_pop($keys);
-
-            foreach ($keys as $key) {
-                /**
-                 * If the key specified in the given path does not exist or is not an array,
-                 * set it to an empty array. This way, we'll keep going inside the
-                 * nested structure of the array, until the last key.
-                 */
-                if (!isset($ref[$key]) || !is_array($ref[$key])) {
-                    $ref[$key] = [];
-                }
-
-                $ref = &$ref[$key];
-            }
-
-            $ref[$lastKey] = $value;  // Assign given value to the final nested key of the array.
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
         }
 
         return $this;
@@ -175,7 +158,16 @@ class Json
             };
         };
 
-        return iterator_to_array($generator($paths));
+        // return iterator_to_array($generator($paths));
+
+        $result =   [];
+        $getter =   $generator($paths);
+
+        foreach ($getter as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        return $result;
     }
 
     /**
@@ -185,7 +177,7 @@ class Json
      */
     public function toJson(array $options = [])
     {
-        $options    =   $this->validateOptions($options);
+        $options    =   $this->validateAndTransformOptions($options);
         $result     =   json_encode($this->data, $options['flags'], $options['depth']);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -224,7 +216,7 @@ class Json
             return null;
         }
 
-        $options    =   $this->validateOptions($options);
+        $options    =   $this->validateAndTransformOptions($options);
         $json       =   json_encode($this->data, $options['flags'], $options['depth']);
 
         if (json_last_error() !== JSON_ERROR_NONE) {

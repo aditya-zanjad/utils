@@ -12,7 +12,7 @@ namespace AdityaZanjad\Utils;
  *
  * @return  null|string
  */
-function str_before(string $str, string $sub)
+function strBefore(string $str, string $sub)
 {
     $sub = strstr($str, $sub, true);
 
@@ -31,7 +31,7 @@ function str_before(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_before_insensitive(string $str, string $sub)
+function strBeforeInsensitive(string $str, string $sub)
 {
     $sub = stristr($str, $sub, true);
 
@@ -50,7 +50,7 @@ function str_before_insensitive(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_after(string $str, string $sub)
+function strAfter(string $str, string $sub)
 {
     $subPos = strpos($str, $sub);
 
@@ -69,7 +69,7 @@ function str_after(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_after_insensitive(string $str, string $sub)
+function strAfterInsensitive(string $str, string $sub)
 {
     $subPos = stripos($str, $sub);
 
@@ -88,7 +88,7 @@ function str_after_insensitive(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_before_last(string $str, string $sub)
+function strBeforeLast(string $str, string $sub)
 {
     $subPos = strrpos($str, $sub);
 
@@ -107,7 +107,7 @@ function str_before_last(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_before_last_insensitive(string $str, string $sub)
+function strBeforeLastInsensitive(string $str, string $sub)
 {
     $subPos = strripos($str, $sub);
 
@@ -126,7 +126,7 @@ function str_before_last_insensitive(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_after_last(string $str, string $sub)
+function strAfterLast(string $str, string $sub)
 {
     $subPos = strpos($str, $sub);
 
@@ -145,7 +145,7 @@ function str_after_last(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_after_last_insensitive(string $str, string $sub)
+function strAfterLastInsensitive(string $str, string $sub)
 {
     $subPos = stripos($str, $sub);
 
@@ -165,7 +165,7 @@ function str_after_last_insensitive(string $str, string $sub)
  *
  * @return  null|string
  */
-function str_between(string $str, string $before, string $after): null|string
+function strBetween(string $str, string $before, string $after): null|string
 {
     // Obtain the positions of start & end parts of the given string to obtain our desired substring.
     $start = strpos($str, $before);
@@ -200,7 +200,7 @@ function str_between(string $str, string $before, string $after): null|string
  *
  * @return  null|string
  */
-function str_between_insensitive(string $str, string $before, string $after): null|string
+function strBetweenInsensitive(string $str, string $before, string $after): null|string
 {
     // Obtain the positions of start & end parts of the given string to obtain our desired substring.
     $start = stripos($str, $before);
@@ -233,7 +233,7 @@ function str_between_insensitive(string $str, string $before, string $after): nu
  *
  * @return  bool
  */
-function str_contains_v2(string $str, string $sub)
+function strContains(string $str, string $sub)
 {
     if (function_exists('str_contains')) {
         return str_contains($str, $sub);
@@ -250,7 +250,7 @@ function str_contains_v2(string $str, string $sub)
  *
  * @return  bool
  */
-function str_contains_v2_insensitive(string $str, string $sub)
+function strContainsInsensitive(string $str, string $sub)
 {
     return stripos($str, $sub) !== false;
 }
@@ -264,7 +264,7 @@ function str_contains_v2_insensitive(string $str, string $sub)
  *
  * @return  string
  */
-function str_replace_v2(string $str, string $search, string $replace)
+function strReplace(string $str, string $search, string $replace)
 {
     $pos = strpos($str, $search);
 
@@ -284,7 +284,7 @@ function str_replace_v2(string $str, string $search, string $replace)
  *
  * @return  string
  */
-function str_replace_v2_insensitive(string $str, string $search, string $replace)
+function strReplaceInsensitive(string $str, string $search, string $replace)
 {
     $pos = stripos($str, $search);
 
@@ -304,7 +304,7 @@ function str_replace_v2_insensitive(string $str, string $search, string $replace
  *
  * @return  string
  */
-function str_replace_last_v2(string $str, string $search, string $replace)
+function strReplaceLast(string $str, string $search, string $replace)
 {
     $pos = strrpos($str, $search);
 
@@ -324,7 +324,7 @@ function str_replace_last_v2(string $str, string $search, string $replace)
  *
  * @return  string
  */
-function str_replace_last_v2_insensitive(string $str, string $search, string $replace)
+function strReplaceLastInsensitive(string $str, string $search, string $replace)
 {
     $pos = strripos($str, $search);
 
@@ -344,7 +344,7 @@ function str_replace_last_v2_insensitive(string $str, string $search, string $re
  *
  * @return  string
  */
-function str_replace_many(string $str, array $searches, array $replacements)
+function strReplaceMany(string $str, array $searches, array $replacements)
 {
     return str_replace($str, $searches, $replacements);
 }
@@ -358,7 +358,7 @@ function str_replace_many(string $str, array $searches, array $replacements)
  *
  * @return  string
  */
-function str_replace_many_insensitive(string $str, array $searches, array $replacements)
+function strReplaceManyInsensitive(string $str, array $searches, array $replacements)
 {
     return str_ireplace($str, $searches, $replacements);
 }
@@ -372,7 +372,7 @@ function str_replace_many_insensitive(string $str, array $searches, array $repla
  *
  * @return  string
  */
-function str_replace_each(string $str, string $search, string $replace)
+function strReplaceEach(string $str, string $search, string $replace)
 {
     while (true) {
         $pos = strpos($str, $search);
@@ -396,7 +396,7 @@ function str_replace_each(string $str, string $search, string $replace)
  *
  * @return  string
  */
-function str_replace_each_insensitive(string $str, string $search, string $replace)
+function strReplaceEachInsensitive(string $str, string $search, string $replace)
 {
     while (true) {
         $pos = stripos($str, $search);
@@ -419,7 +419,7 @@ function str_replace_each_insensitive(string $str, string $search, string $repla
  * 
  * @return  bool
  */
-function str_starts_with_v2(string $str, string $sub)
+function strStartsWith(string $str, string $sub)
 {
     if (function_exists('str_starts_with')) {
         return str_starts_with($str, $sub);
@@ -442,7 +442,7 @@ function str_starts_with_v2(string $str, string $sub)
  * 
  * @return  bool
  */
-function str_ends_with_v2(string $str, string $sub)
+function strEndsWith(string $str, string $sub)
 {
     if (function_exists('str_ends_with')) {
         return str_ends_with($str, $sub);
@@ -464,9 +464,13 @@ function str_ends_with_v2(string $str, string $sub)
  *
  * @return string
  */
-function str_random(int $length = 12): string
+function strRandom(int $length = 12): string
 {
-    return base64_encode(random_bytes($length));
+    $randomBytes = function_exists('random_bytes')
+        ? random_bytes($length)
+        : openssl_random_pseudo_bytes($length);
+
+    return base64_encode($randomBytes);
 }
 
 /**
@@ -474,7 +478,7 @@ function str_random(int $length = 12): string
  *
  * @return string
  */
-function str_uuid4(): string
+function strUuid4(): string
 {
     $data       =   random_bytes(16);
     $data[6]    =   chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100

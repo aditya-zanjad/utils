@@ -159,7 +159,7 @@ class Enum extends NonInstantiable
      *
      * @param string $name
      *
-     * @return string
+     * @return null|string
      */
     protected static function resolveName(string $name)
     {
