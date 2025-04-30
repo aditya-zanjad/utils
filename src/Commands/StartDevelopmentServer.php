@@ -76,7 +76,7 @@ class StartDevelopmentServer extends Command
         }
 
         // If the command execution fails & throwing up the exception is allowed.
-        if ($args['exception'] === true) {
+        if ($status === false && $args['throw_exception'] === true) {
             echo PHP_EOL . PHP_EOL . PHP_EOL;
             throw new CommandFailed("Failed to start the local development server.", (int) $code, $output);
         }

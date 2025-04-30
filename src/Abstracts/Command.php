@@ -43,7 +43,7 @@ abstract class Command
         $result =   [];
 
         foreach ($args as $arg) {
-            if (!$this->strStartsWithV2($arg, '--')) {
+            if (!$this->strStartsWith($arg, '--')) {
                 throw new Exception("The arguments provided to the command must start with the sign '--'.");
             }
 
@@ -102,7 +102,7 @@ abstract class Command
      * 
      * @return  bool
      */
-    protected function strStartsWithV2(string $str, string $sub)
+    protected function strStartsWith(string $str, string $sub): bool
     {
         if (function_exists('str_starts_with')) {
             return str_starts_with($str, $sub);
@@ -143,7 +143,7 @@ abstract class Command
      *
      * @return  null|string
      */
-    function strBetween(string $str, string $before, string $after): null|string
+    protected function strBetween(string $str, string $before, string $after): null|string
     {
         // Obtain the positions of start & end parts of the given string to obtain our desired substring.
         $start = strpos($str, $before);

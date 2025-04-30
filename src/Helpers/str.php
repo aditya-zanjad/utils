@@ -486,3 +486,23 @@ function strUuid4(): string
 
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
+
+/**
+ * Check if the given string is a JSON or not.
+ * 
+ * @param string $str
+ * 
+ * @return bool
+ */
+function strIsJson(string $str, array $options = [])
+{
+    $options['depth']   =   $options['depth'] ?? 512;
+    $options['flags']   =   $options['flags'] ?? 0;
+
+    if (function_exists('json_validate')) {
+        return json_validate($str, $options['depth'], $options['flags']);
+    }
+
+    json_decode($str, $options['depth'], $options['flags']);
+    return json_last_error() === JSON_ERROR_NONE;
+}

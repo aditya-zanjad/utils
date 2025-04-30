@@ -131,82 +131,194 @@ function arrNthKey(array $arr, int $index): null|int|string
 }
 
 /**
- * Check if the given array path exists or not in the given array.
- *
- * @param   array   $arr
- * @param   string  $path
- *
- * @return  bool
+ * Get a random value from the array.
+ * 
+ * @param array $arr
+ * 
+ * @return mixed
  */
-function arrHasPath(array $arr, string $path): bool
+function arrRandom(array $arr)
 {
-    $keys       =   explode('.', $path);
-    $ref        =   &$arr;
-    $pathExists =   true;
-
-    foreach ($keys as $key) {
-        if (!array_key_exists($key, $ref) && !is_array($ref[$key])) {
-            $pathExists = false;
-            break;
-        }
-
-        $ref = &$ref[$key];
+    if (empty($arr)) {
+        return null;
     }
 
-    return $pathExists;
+    $randomKey = array_rand($arr);
+    return $arr[$randomKey];
 }
 
 /**
- * Check that the value of the given array path equals to NULL.
+ * Get a random key from the array.
+ * 
+ * @param array $arr
+ * 
+ * @return mixed
+ */
+function arrRandomKey(array $arr)
+{
+    if (empty($arr)) {
+        return null;
+    }
+
+    $randomKey = array_rand($arr);
+    return $arr[$randomKey];
+}
+
+/**
+ * Get a random value from the array.
+ * 
+ * @param   array<int|string, mixed>    $arr
+ * @param   int                         $quantity
+ * 
+ * @return  array<int|string, mixed>
+ */
+function arrRandoms(array $arr, int $quantity = 2)
+{
+    if (empty($arr)) {
+        return null;
+    }
+
+    if ($quantity < 2) {
+        throw new Exception("[Developer][Exception]: The value of the parameter quantity should be less than 2.");
+    }
+
+    if (count($arr) < $quantity) {
+        throw new Exception("[Developer][Exception]: The value of the parameter quantity should not be greater than the size of the array.");
+    }
+
+    $randomKeys =   array_rand($arr, $quantity);
+    $result     =   [];
+
+    foreach ($randomKeys as $randomKey) {
+        $result[$randomKey] = $arr[$randomKey];
+    }
+
+    return $result;
+}
+
+/**
+ * Get a random key from the array.
+ * 
+ * @param   array<int|string, mixed>    $arr
+ * @param   int                         $quantity
+ * 
+ * @return  array<int|string, mixed>
+ */
+function arrRandomKeys(array $arr, int $quantity = 2)
+{
+    if (empty($arr)) {
+        return null;
+    }
+
+    if ($quantity < 2) {
+        throw new Exception("[Developer][Exception]: The value of the parameter quantity should be less than 2.");
+    }
+
+    if (count($arr) < $quantity) {
+        throw new Exception("[Developer][Exception]: The value of the parameter quantity should not be greater than the size of the array.");
+    }
+
+    return array_rand($arr, $quantity);
+}
+
+/**
+ * Check if the given dot notation path exists or not in the given array.
+ * 
+ * ======================================================================================
+ * This function uses PHP's built-in 'array_key_exists()' function. It checks if each of
+ * the given array path keys exist or not in the given array. If any of these keys is
+ * missing, this function will return a boolean false. Otherwise, a boolean true is
+ * returned.
+ * ======================================================================================
  *
  * @param   array   $arr
  * @param   string  $path
  *
  * @return  bool
  */
-function arrIsPathNull(array $arr, string $path): bool
+function arrPathExists(array $arr, string $path): bool
 {
     $keys   =   explode('.', $path);
     $ref    =   &$arr;
-    $isNull =   false;
 
     foreach ($keys as $key) {
-        if (!isset($key, $ref) && !is_array($ref[$key])) {
-            $isNull = true;
-            break;
-        }
-
         $ref = &$ref[$key];
+
+        if (!array_key_exists($key, $ref)) {
+            return false;
+        }
     }
 
-    return $isNull;
+    return true;
 }
 
 /**
- * Check if the given array path exists & does not contain an "Empty Value".
+ * Check if value of the given dot notation array path equals to NULL or not.
+ * 
+ * ======================================================================================
+ * This function uses PHP's built-in 'isset()' function. Therefore, it will check for 
+ * following two conditions:
+ *      [1] If the each of the array keys of the nested path exists or not.
+ *      [2] If the value of the given array path is equal to NULL or not.
+ * 
+ * If any of the above conditions fail, a boolean false will be returned. Otherwise, a
+ * boolean true is returned.
+ * ======================================================================================
  *
  * @param   array   $arr
  * @param   string  $path
  *
  * @return  bool
  */
-function arrIsPathEmpty(array $arr, string $path): bool
+function arrPathNull(array $arr, string $path): bool
+{
+    $keys   =   explode('.', $path);
+    $ref    =   &$arr;
+
+    foreach ($keys as $key) {
+        $ref = &$ref[$key];
+
+        if (!isset($ref[$key])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Check if value of the given array path exists & if it's an 'empty value' or not.
+ * 
+ * ======================================================================================
+ * This function uses PHP's built-in 'isset()' & 'empty()' functions. Therefore, it will 
+ * check for following two conditions:
+ *      [1] If the each of the array keys of the nested path exists or not.
+ *      [2] If the value of the given array path is an empty value or not.
+ * 
+ * If any of the above conditions fail, a boolean false will be returned. Otherwise, a
+ * boolean true is returned.
+ * ======================================================================================
+ *
+ * @param   array   $arr
+ * @param   string  $path
+ *
+ * @return  bool
+ */
+function arrPathEmpty(array $arr, string $path): bool
 {
     $ref        =   &$arr;
     $pathKeys   =   explode('.', $path);
-    $isEmpty    =   false;
 
     foreach ($pathKeys as $pathKey) {
         // The field must be set & not empty.
         if (!isset($ref[$pathKey]) || empty($ref[$pathKey])) {
-            $isEmpty = true;
-            break;
+            return true;
         }
 
         $ref = &$ref[$pathKey];
     }
 
-    return $isEmpty;
+    return false;
 }
 
 /**
@@ -219,18 +331,16 @@ function arrIsPathEmpty(array $arr, string $path): bool
  */
 function arrGet(array $arr, string $path)
 {
-    $value = null;
-
     if (empty($arr)) {
-        return $value;
+        return null;
     }
 
     $ref    =   &$arr;
     $keys   =   explode('.', $path);
 
     foreach ($keys as $key) {
-        if (!array_key_exists($key, $ref) || !is_array($ref)) {
-            break;
+        if (!isset($ref[$key])) {
+            return null;
         }
 
         $ref = &$ref[$key];
@@ -437,7 +547,7 @@ function arrLastFn(array $arr, callable $fn)
  *
  * @return bool
  */
-function arrIndexed(array $arr): bool
+function arrIsIndexed(array $arr): bool
 {
     if (empty($arr)) {
         return true;
@@ -550,30 +660,39 @@ function arrFlatten(array $arr): array
         return [];
     }
 
-    if (!class_exists(RecursiveIteratorIterator::class) || !class_exists(RecursiveArrayIterator::class)) {
-        $flattener = function (array $arr) use (&$flattener) {
-            foreach ($arr as $value) {
-                is_array($value) ? yield from $flattener($value) : yield $value;
+    if (class_exists(RecursiveIteratorIterator::class) && class_exists(RecursiveArrayIterator::class)) {
+        $arrIterator    =   new RecursiveArrayIterator($arr);
+        $iterator       =   new RecursiveIteratorIterator($arrIterator, RecursiveIteratorIterator::SELF_FIRST);
+        $result         =   [];
+        $nestedPathKeys =   [];
+
+        foreach ($iterator as $key => $value) {
+            $nestedPathKeys[$iterator->getDepth()] = $key;
+
+            if (is_array($value)) {
+                continue;
             }
-        };
 
-        return iterator_to_array($flattener($arr), false);
-    }
-
-    $arrIterator    =   new RecursiveArrayIterator($arr);
-    $iterator       =   new RecursiveIteratorIterator($arrIterator, RecursiveIteratorIterator::SELF_FIRST);
-    $result         =   [];
-    $nestedPathKeys =   [];
-
-    foreach ($iterator as $key => $value) {
-        $nestedPathKeys[$iterator->getDepth()] = $key;
-
-        if (is_array($value)) {
-            continue;
+            $result[] = $value;
         }
 
-        $result[] = $value;
+        return $result;
     }
 
-    return $result;
+    $flattener = function (array $arr) use (&$flattener) {
+        $result = [];
+
+        foreach ($arr as $key => $value) {
+            if (is_array($value)) {
+                $result = array_merge($result, $flattener($arr));
+                continue;
+            }
+
+            $result[] = $value;
+        }
+
+        return $result;
+    };
+
+    return $flattener($arr);
 }
